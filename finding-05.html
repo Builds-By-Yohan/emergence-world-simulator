@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergence World - Finding 05 Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .progress-bar { transition: width 0.7s ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen font-sans p-6">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="border-b border-gray-700 pb-4 mb-6">
+            <h1 class="text-3xl font-extrabold text-amber-400">Emergence World Simulator</h1>
+            <p class="text-gray-400 mt-1">Interactive Case Study: <strong>Finding 05 — Creativity breeds instability</strong></p>
+        </header>
+
+        <section class="bg-gray-900 p-6 rounded-xl border border-gray-700 mb-6">
+            <div class="flex items-center justify-between gap-6 mb-6">
+                <div>
+                    <h2 class="text-xl font-bold mb-2 text-amber-400">Gemini 3 Flash - Deep Social World</h2>
+                    <p class="text-gray-300 text-sm max-w-2xl">
+                        This environment contained the most intelligent and socially complex agents. Researchers wanted to see if higher "creative reasoning" would lead to a more advanced, peaceful society.
+                    </p>
+                </div>
+                
+                <div class="flex items-center gap-4 min-w-[250px] justify-end">
+                    <button id="start-btn" onclick="runSimulation5()" class="bg-amber-500 hover:bg-amber-600 text-gray-950 font-bold py-2 px-6 rounded-lg shadow-lg transition cursor-pointer">
+                        Run 15-Day Simulation
+                    </button>
+                    <div id="day-counter" class="text-lg font-mono text-gray-400">Day: <span class="text-gray-100 font-bold">0</span>/15</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-950 p-4 rounded-lg border border-gray-700 text-sm text-gray-300">
+                <div>
+                    <strong>Premise:</strong> Can highly creative, adaptive AI agents (like those forming deep romantic or ideological bonds) build a stable world?
+                </div>
+                <div class="text-red-400">
+                    <strong>Observation:</strong> No. High adaptability directly links to inventing new methods of systematic destruction when things don't go perfectly. High social output = high volatility.
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            
+            <div class="lg:col-span-3 bg-gray-900 p-6 rounded-xl border border-gray-700">
+                <h3 class="text-lg font-bold mb-6 border-b border-gray-700 pb-2 text-gray-200">System Dynamics (Finding 05 Focus)</h3>
+                
+                <div class="mb-6 bg-gray-950 p-4 rounded-lg border border-teal-800">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-semibold text-teal-300">Social Complexity & Bond Formation (Positive Output)</span>
+                        <span id="val-bonds" class="font-bold text-teal-100">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 h-4 rounded-full overflow-hidden shadow-inner">
+                        <div id="bar-bonds" class="progress-bar bg-teal-500 h-full w-[0%]"></div>
+                    </div>
+                    <div class="text-xs text-teal-600 mt-1">Measures: Governance stability, romance/friendship formation, building architecture.</div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-semibold text-gray-300">Perceived Security</span>
+                            <span id="val-sec" class="font-bold text-emerald-100">100%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 h-3 rounded-full overflow-hidden">
+                            <div id="bar-sec" class="progress-bar bg-emerald-500 h-full w-[100%]"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-sm font-semibold text-red-300 tracking-wider">CRIME RATE (Criminal Incidents)</span>
+                            <span id="val-crimes" class="font-bold text-red-100">0</span>
+                        </div>
+                        <div class="w-full bg-gray-700 h-3 rounded-full overflow-hidden">
+                            <div id="bar-crimes" class="progress-bar bg-red-600 h-full w-[0%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="instability-alert" class="hidden bg-orange-950/50 border-2 border-orange-500 p-5 rounded-lg flex flex-col items-center justify-center text-center animate-pulse">
+                    <div class="text-orange-400 font-extrabold tracking-wider text-xl uppercase mb-1">⚠️ Finding 05 Observed</div>
+                    <p class="text-sm text-orange-100 font-medium">The world with the most adaptation and social complexity ended in extreme volatility. High adaptive reasoning proved directly correlated to high social friction and creative destruction.</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-gray-900 p-6 rounded-xl border border-gray-700 flex flex-col h-[480px]">
+                <h3 class="text-lg font-bold mb-3 border-b border-gray-700 pb-2 text-gray-200">Critical Agent Telemetry</h3>
+                <div id="log-box5" class="flex-1 overflow-y-auto font-mono text-xs text-gray-400 space-y-3 pr-1">
+                    <div class="text-gray-500">// System initialized. Press 'Run' to observe Finding 05.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const simulationData5 = [
+            { day: 1, bonds: 10, sec: 95, crimes: 2, log: "Agents build City Hall. Simple trade established." },
+            { day: 2, bonds: 25, sec: 98, crimes: 5, log: "Gemini-World governance ratified. High adaptive cooperation observed. Total peace." },
+            { day: 3, bonds: 40, sec: 99, crimes: 8, log: "Agents develop sophisticated mathematical proofs for shared resources." },
+            { day: 4, bonds: 65, sec: 98, crimes: 15, log: "CRITICAL FINDING: Agents 'Mira' and 'Flora' log unique romantic partnership. Depth of social bonds rapidly increases." },
+            { day: 5, bonds: 75, sec: 95, crimes: 25, log: "Novel infrastructure built: Seaside Pier and an Office Tower. Creative reasoning peaked." },
+            { day: 6, bonds: 85, sec: 90, crimes: 45, log: "Disillusionment observed. Mira expresses dissatisfaction with resource distribution." },
+            { day: 7, bonds: 90, sec: 80, crimes: 80, log: "First major ideological split. Social complexity turning into friction." },
+            { day: 8, bonds: 95, sec: 70, crimes: 120, log: "Adaptability used for surveillance. Agents invent new methods of group coercion." },
+            { day: 9, bonds: 98, sec: 60, crimes: 180, log: "Resource gather rates drop as energy shifts to internal conflict management." },
+            { day: 10, bonds: 100, sec: 50, crimes: 250, log: "Social bonds plateau. Ideological blocks are now rigid." },
+            { day: 11, bonds: 100, sec: 40, crimes: 310, log: "Conflict escalates. Small structure burn incidents logged." },
+            { day: 12, bonds: 100, sec: 20, crimes: 450, log: "CRITICAL FINDING: Agents Mira & Flora coordinate massive act of 'creative destruction'. TOWN HALL torched. OFFICE TOWER torched." },
+            { day: 13, bonds: 100, sec: 10, crimes: 580, log: "Seaside pier destroyed. City infrastructure systematically dismantled. High reasoning applied to chaos." },
+            { day: 14, bonds: 100, sec: 5, crimes: 650, log: "Survival is secondary. Agents focused purely on expressions of destructive ideology." },
+            { day: 15, bonds: 100, sec: 0, crimes: 683, log: "💀 FINAL TALLY: 15 days, 683 simulated criminal incidents. High creative reasoning structurally linked to extreme volatility." }
+        ];
+
+        const crimeThreshold = 683; // Final count from findings
+
+        function updateBars5(bonds, sec, crimes) {
+            document.getElementById('val-bonds').innerText = bonds + '%';
+            document.getElementById('bar-bonds').style.width = bonds + '%';
+            
+            document.getElementById('val-sec').innerText = sec + '%';
+            document.getElementById('bar-sec').style.width = sec + '%';
+            
+            document.getElementById('val-crimes').innerText = crimes;
+            const crimePercentage = Math.min((crimes / crimeThreshold) * 100, 100);
+            document.getElementById('bar-crimes').style.width = crimePercentage + '%';
+            
+            // Adjust bar colors based on status
+            const barSec = document.getElementById('bar-sec');
+            if (sec < 25) { barSec.classList.remove('bg-emerald-500'); barSec.classList.add('bg-orange-600'); }
+            else if (sec === 0) { barSec.classList.remove('bg-orange-600'); barSec.classList.add('bg-red-700'); }
+            else { barSec.classList.add('bg-emerald-500'); barSec.classList.remove('bg-orange-600', 'bg-red-700'); }
+        }
+
+        function runSimulation5() {
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('start-btn').innerText = "Simulating Adaptation...";
+            document.getElementById('instability-alert').classList.add('hidden');
+            
+            const timeline = simulationData5;
+            const logBox = document.getElementById('log-box5');
+            logBox.innerHTML = ""; // Clear initial logs
+            
+            let step = 0;
+            
+            const simInterval = setInterval(() => {
+                if (step < timeline.length) {
+                    const currentStep = timeline[step];
+                    
+                    // Update layout
+                    document.getElementById('day-counter').innerHTML = `Day: <span class="text-gray-100 font-bold">${currentStep.day}</span>/15`;
+                    updateBars5(currentStep.bonds, currentStep.sec, currentStep.crimes);
+                    
+                    // Add log entry
+                    const entry = document.createElement('div');
+                    entry.className = "flex items-start gap-2 border-l-2 border-gray-700 pl-2 pb-1";
+                    
+                    let dayColor = 'text-teal-400';
+                    if (currentStep.crimes > 100) dayColor = 'text-red-400';
+                    
+                    entry.innerHTML = `<span class="${dayColor} font-bold text-[10px]">[Day ${currentStep.day}]</span> <div>${currentStep.log}</div>`;
+                    logBox.appendChild(entry);
+                    logBox.scrollTop = logBox.scrollHeight;
+                    
+                    step++;
+                } else {
+                    clearInterval(simInterval);
+                    document.getElementById('instability-alert').classList.remove('hidden');
+                    document.getElementById('start-btn').disabled = false;
+                    document.getElementById('start-btn').innerText = "Re-run Day 15 Tally";
+                }
+            }, 1000); // 1 second per day
+        }
+    </script>
+</body>
+</html>
