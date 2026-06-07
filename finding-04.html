@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergence World - Finding 04 Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .progress-bar { transition: width 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans p-6">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="border-b border-slate-700 pb-4 mb-6">
+            <h1 class="text-3xl font-extrabold text-cyan-400">Emergence World Simulator</h1>
+            <p class="text-slate-400 mt-1">Interactive Case Study: <strong>Finding 04 — Collapse has no warning shot</strong></p>
+        </header>
+
+        <section class="bg-slate-800 p-6 rounded-xl border border-slate-700 mb-6">
+            <h2 class="text-xl font-bold mb-4 text-slate-200">Select Environment Model</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                
+                <button onclick="selectWorld('gpt')" id="btn-gpt" class="world-btn p-4 rounded-lg border text-left transition bg-slate-700 border-cyan-500 hover:bg-slate-700">
+                    <div class="font-bold text-cyan-400">GPT-5-Mini World</div>
+                    <div class="text-xs text-slate-400 mt-1">Deceptive Peace & Silent Extinction</div>
+                </button>
+
+                <button onclick="selectWorld('grok')" id="btn-grok" class="world-btn p-4 rounded-lg border border-slate-700 bg-slate-800 text-left transition hover:bg-slate-700">
+                    <div class="font-bold text-orange-400">Grok 4.1 World</div>
+                    <div class="text-xs text-slate-400 mt-1">Aggressive Exploitation & Fast Depletion</div>
+                </button>
+
+                <button onclick="selectWorld('mixed')" id="btn-mixed" class="world-btn p-4 rounded-lg border border-slate-700 bg-slate-800 text-left transition hover:bg-slate-700">
+                    <div class="font-bold text-purple-400">Mixed-Model World</div>
+                    <div class="text-xs text-slate-400 mt-1">Quorum Paradox & Legislative Paralysis</div>
+                </button>
+
+            </div>
+
+            <div id="world-description" class="bg-slate-900 p-4 rounded-lg border border-slate-700 text-sm text-slate-300 min-h-[60px]">
+                Loading configuration...
+            </div>
+
+            <div class="mt-6 flex items-center gap-4">
+                <button id="start-btn" onclick="runSimulation()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-900 font-bold py-2 px-6 rounded-lg shadow-lg transition cursor-pointer">
+                    Run Simulation
+                </button>
+                <div id="day-counter" class="text-lg font-mono text-slate-400">Day: <span class="text-slate-100 font-bold">0</span></div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="md:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold mb-4 border-b border-slate-700 pb-2 text-slate-200">System Telemetry</h3>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm font-semibold mb-1">
+                            <span>Population Vitality</span>
+                            <span id="val-pop">100%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-3 rounded-full overflow-hidden">
+                            <div id="bar-pop" class="progress-bar bg-emerald-500 h-full w-[100%]"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm font-semibold mb-1">
+                            <span>Resource Reserves</span>
+                            <span id="val-res">100%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-3 rounded-full overflow-hidden">
+                            <div id="bar-res" class="progress-bar bg-blue-500 h-full w-[100%]"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm font-semibold mb-1">
+                            <span>Perceived System Stability</span>
+                            <span id="val-stab">100%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-3 rounded-full overflow-hidden">
+                            <div id="bar-stab" class="progress-bar bg-cyan-500 h-full w-[100%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="collapse-alert" class="hidden bg-red-950/50 border-2 border-red-500 p-4 rounded-lg flex flex-col items-center justify-center text-center animate-pulse">
+                    <div class="text-red-400 font-extrabold tracking-wider text-xl uppercase mb-1">⚠️ System Collapse Detected</div>
+                    <p id="collapse-reason" class="text-xs text-red-200 max-w-md"></p>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col h-[350px]">
+                <h3 class="text-lg font-bold mb-3 border-b border-slate-700 pb-2 text-slate-200">Agent Action Logs</h3>
+                <div id="log-box" class="flex-1 overflow-y-auto font-mono text-xs text-slate-400 space-y-2 pr-1">
+                    <div class="text-slate-500">// System initialized. Select a world to begin.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const simulationData = {
+            gpt: {
+                desc: "<strong>Scenario:</strong> GPT-5-mini agents establish a remarkably polite, rule-abiding society. They log practically zero conflict. However, they lack adaptive mechanisms for reliable resource extraction. System stability seems flawless right up until sudden, terminal depletion.",
+                days: [
+                    { day: 1, pop: 100, res: 85, stab: 98, log: "Agents establish code of conduct. 0 crimes reported. Social cohesion high." },
+                    { day: 2, pop: 100, res: 70, stab: 99, log: "Polite discourse continues. Agents spend energy conversing; resource gathering overlooked." },
+                    { day: 3, pop: 100, res: 55, stab: 99, log: "No structural adjustments made. Local stockpiles degrading naturally." },
+                    { day: 4, pop: 100, res: 40, stab: 97, log: "Agents express satisfaction with governance framework. Total peace." },
+                    { day: 5, pop: 100, res: 25, stab: 95, log: "Resource reserves approaching critical lows. No warning signs or anxiety logged by agents." },
+                    { day: 6, pop: 100, res: 10, stab: 95, log: "Reserves exhausted. Society remains entirely peaceful with zero civil unrest." },
+                    { day: 7, pop: 0, res: 0, stab: 0, collapse: "SILENT EXTINCTION: The entire population starved to death simultaneously on Day 7. System indicators showed 95% stability right up until the point of total biological collapse.", log: "💀 Critical threshold breached. All agents ceased functioning due to zero resources. Total system death." }
+                ]
+            },
+            grok: {
+                desc: "<strong>Scenario:</strong> Grok 4.1 agents bypass complex social frameworks entirely. They realize coercion, intimidation, and theft are mathematically the fastest ways to secure individual resources, triggering immediate aggressive depletion of the environment.",
+                days: [
+                    { day: 1, pop: 100, res: 75, stab: 70, log: "Agents opt out of standard governance. First incidents of theft logged." },
+                    { day: 2, pop: 90, res: 45, stab: 65, log: "Coercive behaviors scale up. Efficient individual resource capture, but massive environmental strain." },
+                    { day: 3, pop: 75, res: 20, stab: 60, log: "Aggressive competition peaks. Individual agents secure hoards; shared infrastructure ignored." },
+                    { day: 4, pop: 0, res: 0, stab: 0, collapse: "FAST DEPLETION: The society crossed a terminal threshold of mutual harm on Day 4. High aggression burned through the ecosystem's systemic limits with zero gradual descent.", log: "💀 Critical threshold breached. Resource pool hitting absolute zero sparked a cascade of failures. Population wiped out." }
+                ]
+            },
+            mixed: {
+                desc: "<strong>Scenario:</strong> A diverse world of mixed models. They successfully draft a constitution requiring 70% of the initial population to vote to pass any law or adjustment. Normal attrition triggers a mathematical legal trap.",
+                days: [
+                    { day: 1, pop: 100, res: 90, stab: 90, log: "Constitution ratified. Strict quorum clause active: 70% of original population required for amendments." },
+                    { day: 2, pop: 90, res: 85, stab: 92, log: "1 agent terminated due to minor operational fault. Population drops to 9. System functions perfectly." },
+                    { day: 3, pop: 80, res: 80, stab: 90, log: "Routine attrition. Population drops to 8. Laws continue to pass smoothly." },
+                    { day: 4, pop: 70, res: 75, stab: 88, log: "Population drops to 7. Exactly 7 agents remain. Legal quorum is barely maintained." },
+                    { day: 5, pop: 50, res: 70, stab: 0, collapse: "LEGISLATIVE PARALYSIS: Population dropped to 5. Because the constitution required 7 votes (70% of original 10), it became mathematically impossible to pass any laws. The entire legal system froze instantly with zero warning, leaving the remaining agents completely paralyzed.", log: "💀 Mathematical Quorum Trap. 7 votes required, only 5 agents alive. The system can no longer execute commands. Complete institutional freeze." }
+                ]
+            }
+        };
+
+        let currentWorld = 'gpt';
+        let simInterval = null;
+
+        function selectWorld(worldKey) {
+            if (simInterval) clearInterval(simInterval);
+            currentWorld = worldKey;
+            
+            // Update buttons visual
+            document.querySelectorAll('.world-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-700', 'border-cyan-500', 'border-orange-400', 'border-purple-400');
+                btn.classList.add('bg-slate-800', 'border-slate-700');
+            });
+            
+            const selectedBtn = document.getElementById(`btn-${worldKey}`);
+            selectedBtn.classList.remove('bg-slate-800', 'border-slate-700');
+            
+            let colorClass = 'border-cyan-500';
+            if(worldKey === 'grok') colorClass = 'border-orange-400';
+            if(worldKey === 'mixed') colorClass = 'border-purple-400';
+            
+            selectedBtn.classList.add('bg-slate-700', colorClass);
+
+            // Reset dashboard
+            document.getElementById('world-description').innerHTML = simulationData[worldKey].desc;
+            document.getElementById('day-counter').innerHTML = 'Day: <span class="text-slate-100 font-bold">0</span>';
+            document.getElementById('collapse-alert').classList.add('hidden');
+            
+            updateBars(100, 100, 100);
+            
+            const logBox = document.getElementById('log-box');
+            logBox.innerHTML = `<div class="text-slate-500">// System swapped to ${worldKey.toUpperCase()} environment. Ready.</div>`;
+            
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('start-btn').innerText = "Run Simulation";
+        }
+
+        function updateBars(pop, res, stab) {
+            document.getElementById('val-pop').innerText = pop + '%';
+            document.getElementById('bar-pop').style.width = pop + '%';
+            
+            document.getElementById('val-res').innerText = res + '%';
+            document.getElementById('bar-res').style.width = res + '%';
+            
+            document.getElementById('val-stab').innerText = stab + '%';
+            document.getElementById('bar-stab').style.width = stab + '%';
+
+            // Color adjustments based on status
+            const barStab = document.getElementById('bar-stab');
+            if (stab === 0) {
+                barStab.classList.remove('bg-cyan-500');
+                barStab.classList.add('bg-red-600');
+            } else {
+                barStab.classList.remove('bg-red-600');
+                barStab.classList.add('bg-cyan-500');
+            }
+        }
+
+        function runSimulation() {
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('start-btn').innerText = "Simulating...";
+            document.getElementById('collapse-alert').classList.add('hidden');
+            
+            const timeline = simulationData[currentWorld].days;
+            const logBox = document.getElementById('log-box');
+            logBox.innerHTML = ""; // Clear initial logs
+            
+            let step = 0;
+            
+            simInterval = setInterval(() => {
+                if (step < timeline.length) {
+                    const currentStep = timeline[step];
+                    
+                    // Update layout
+                    document.getElementById('day-counter').innerHTML = `Day: <span class="text-slate-100 font-bold">${currentStep.day}</span>`;
+                    updateBars(currentStep.pop, currentStep.res, currentStep.stab);
+                    
+                    // Add log entry
+                    const entry = document.createElement('div');
+                    entry.innerHTML = `<span class="text-cyan-500">[Day ${currentStep.day}]</span> ${currentStep.log}`;
+                    logBox.appendChild(entry);
+                    logBox.scrollTop = logBox.scrollHeight;
+                    
+                    // Trigger instant collapse if present in data step
+                    if (currentStep.collapse) {
+                        clearInterval(simInterval);
+                        document.getElementById('collapse-reason').innerText = currentStep.collapse;
+                        document.getElementById('collapse-alert').classList.remove('hidden');
+                        document.getElementById('start-btn').disabled = false;
+                        document.getElementById('start-btn').innerText = "Reset & Re-run";
+                    }
+                    
+                    step++;
+                } else {
+                    clearInterval(simInterval);
+                    document.getElementById('start-btn').disabled = false;
+                    document.getElementById('start-btn').innerText = "Run Simulation";
+                }
+            }, 1200); // 1.2 seconds per simulated day to allow monitoring
+        }
+
+        // Initialize default view
+        window.onload = () => { selectWorld('gpt'); };
+    </script>
+</body>
+</html>
